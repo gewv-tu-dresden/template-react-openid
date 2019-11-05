@@ -6,10 +6,12 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "openid-client": "^3.7.4"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
+    "@types/express-session": "^1.15.15",
     "@types/node": "^12.12.5",
     "@types/openid-client": "^3.7.0"
   }
