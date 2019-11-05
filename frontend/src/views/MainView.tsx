@@ -12,7 +12,7 @@ const { Header } = Layout;
 const { SubMenu } = Menu;
 
 export default function MainView() {
-  const loggedIn = false;
+  const loggedIn = false
 
   return (
     <Layout>

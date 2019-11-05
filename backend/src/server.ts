@@ -4,6 +4,7 @@ import OpenIDConnectStrategy from 'openid-client/lib/passport_strategy'
 import session from 'express-session'
 import logger from 'morgan'
 import passport from 'passport'
+import cors from 'cors'
 
 import { httpTestSession, ensureLoggedIn } from './helpers/httpHelpers'
 
@@ -41,6 +42,7 @@ const main = async () => {
     app.use(session(sessionConfig))
     app.use(passport.initialize())
     app.use(passport.session())
+    app.use(cors())
 
     passport.use('oidc', new OpenIDConnectStrategy({ client, sessionKey: sessionSecret }, (tokenSet, profile, done) => {
         return done(null, profile);
@@ -63,8 +65,10 @@ const main = async () => {
         }
     );
 
-    app.use('/profile', ensureLoggedIn, (req, res) => {
-        res.render('profile', { title: 'Express', user: req.user });
+    app.use('/profile', (req, res) => {
+        console.log("User request")
+        console.log(req.user)
+        res.send(req.user)
     });
 
     app.get('/auth/logout', async function (req, res) {
