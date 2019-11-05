@@ -1,0 +1,25 @@
+{
+  "name": "template-react-openid",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:karlTGA/template-react-openid.git",
+  "author": "Karl Wolffgang <karl_eugen.wolffgang@tu-dresden.de>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node --inspect=5858 -r ts-node/register -r dotenv/config ./backend/src/server.ts",
+    "start:watch": "nodemon",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.0",
+    "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-typescript": "^7.7.0",
+    "nodemon": "^1.19.4",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  }
+}

@@ -11,7 +11,6 @@ const client_secret = process.env.OPENID_CLIENT_SECRET
 
 const main = async () => {
 
-
     const issuer = await Issuer.discover(issuer_uri)
     const client = new issuer.Client({
         client_id,
