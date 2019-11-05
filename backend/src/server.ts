@@ -1,6 +1,11 @@
 import express from 'express'
 import { Issuer, generators } from 'openid-client'
+import OpenIDConnectStrategy from 'openid-client/lib/passport_strategy'
 import session from 'express-session'
+import logger from 'morgan'
+import passport from 'passport'
+
+import { httpTestSession, ensureLoggedIn } from './helpers/httpHelpers'
 
 // load the basic infos from env
 const port = process.env.PORT || 4000
@@ -9,10 +14,10 @@ const redirect_uri = host + '/auth/callback'
 const issuer_uri = process.env.OPENID_CLIENT_ISSUER || ''
 const client_id = process.env.OPENID_CLIENT_ID || ''
 const client_secret = process.env.OPENID_CLIENT_SECRET
-
+const sessionSecret = Math.random().toString(36);
 
 const sessionConfig = {
-    secret: 'keyboard cat',
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -34,41 +39,38 @@ const main = async () => {
     const app = express()
 
     app.use(session(sessionConfig))
+    app.use(passport.initialize())
+    app.use(passport.session())
 
-    app.get('/auth/gewv', async function (req, res) {
-        console.log("Try to redirect to auth backen!")
+    passport.use('oidc', new OpenIDConnectStrategy({ client, sessionKey: sessionSecret }, (tokenSet, profile, done) => {
+        return done(null, profile);
+    }))
 
-        const redirectUrl = client.authorizationUrl({
-            scope: 'openid email profile',
-            resource: redirect_uri,
-            code_challenge,
-            code_challenge_method: 'S256',
-        });
-
-        console.log("Send user to redirect url: " + redirectUrl)
-        res.redirect(redirectUrl)
+    passport.serializeUser((user, next) => {
+        next(null, user);
     });
 
-    app.get('/auth/callback', async function (req, res) {
-        console.log("Get redirect callback!")
+    passport.deserializeUser((obj, next) => {
+        next(null, obj);
+    });
 
-        const params = client.callbackParams(req);
-        const tokenSet = await client.callback(redirect_uri, params, { code_verifier })
-        console.log('received and validated tokens %j', tokenSet);
-        console.log('validated ID Token claims %j', tokenSet.claims());
+    app.use('/auth/gewv', passport.authenticate('oidc'));
 
-        res.redirect('http://localhost:3000/')
-    })
+    app.use('/auth/callback',
+        passport.authenticate('oidc', { failureRedirect: '/error' }),
+        (req, res) => {
+            res.redirect('http://localhost:3000/');
+        }
+    );
+
+    app.use('/profile', ensureLoggedIn, (req, res) => {
+        res.render('profile', { title: 'Express', user: req.user });
+    });
 
     app.get('/auth/logout', async function (req, res) {
-        console.log("Logout user!")
-        if (req.session == null) res.sendStatus(404)
-
-        req.session.destroy((err) => {
-            if (err != null) console.error(err)
-        })
-
-        res.sendStatus(200)
+        req.logout()
+        req.session.destroy(() => { })
+        res.redirect('http://localhost:3000/')
     })
 
 
