@@ -1,5 +1,4 @@
 import React from "react";
-import { useReactOidc, withOidcSecure } from "@axa-fr/react-oidc-context";
 import { Layout, Menu, Icon } from "antd";
 import { Switch, Route, Link } from "react-router-dom";
 
@@ -13,8 +12,7 @@ const { Header } = Layout;
 const { SubMenu } = Menu;
 
 export default function MainView() {
-  const { oidcUser, logout } = useReactOidc();
-  const loggedIn = oidcUser != null;
+  const loggedIn = false;
 
   return (
     <Layout>
@@ -40,7 +38,7 @@ export default function MainView() {
               title={
                 <span className="submenu-title-wrapper">
                   <Icon type="user" />
-                  {loggedIn ? oidcUser.profile.name : "Account"}
+                  Account
                 </span>
               }
               className="account-submenu"
@@ -49,7 +47,7 @@ export default function MainView() {
               <Menu.Item key="account:profile">
                 <Link to="/profile">Profile</Link>
               </Menu.Item>
-              <Menu.Item key="account:logaut" onClick={logout}>
+              <Menu.Item key="account:logaut">
                 Logout
               </Menu.Item>
             </SubMenu>
@@ -68,9 +66,9 @@ export default function MainView() {
       <Layout>
         <Switch>
           <Route path="/auth/login" component={LoginView} />
-          <Route path="/devices" component={withOidcSecure(DevicesView)} />
-          <Route path="/users" component={withOidcSecure(UsersView)} />
-          <Route path="/profile" component={withOidcSecure(ProfileView)} />
+          <Route path="/devices" component={DevicesView} />
+          <Route path="/users" component={UsersView} />
+          <Route path="/profile" component={ProfileView} />
           <Route path="/" component={HomeView} />
         </Switch>
       </Layout>
