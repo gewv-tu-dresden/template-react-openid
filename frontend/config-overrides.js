@@ -12,10 +12,6 @@ module.exports = override(
     style: "css"
   }),
   addWebpackPlugin(
-    new webpack.EnvironmentPlugin([
-      "OAUTH_CLIENT_AUTHORITY",
-      "OAUTH_CLIENT_ID",
-      "OAUTH_CLIENT_SECRET"
-    ])
+    new webpack.EnvironmentPlugin([])
   )
 );

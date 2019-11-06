@@ -6,7 +6,7 @@ export default function LoginView() {
     <Layout.Content>
       <div id="login-oauth-providers">
         <Row>
-          <a href="http://localhost:4000/auth/gewv">
+          <a href="http://localhost:4000/auth/gewv/login">
             <Button className="login-oauth-button">
               GEWV Login
             </Button>

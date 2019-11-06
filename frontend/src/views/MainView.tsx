@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Layout, Menu, Icon } from "antd";
-import { Switch, Route, Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
-import UsersView from "./UsersView";
-import DevicesView from "./DevicesView";
-import HomeView from "./HomeView";
-import LoginView from "./LoginView";
-import ProfileView from "./ProfileView";
+import Routes from '../Routes'
+import { UserContext } from '../App'
 
 const { Header } = Layout;
 const { SubMenu } = Menu;
 
 export default function MainView() {
-  const loggedIn = false
+  const userContext = useContext(UserContext)
+  const history = useHistory()
+  const user = userContext.user
+  const loggedIn = user != null
+
+  const logout = async () => {
+    await fetch('http://localhost:4000/auth/gewv/logout', {
+      mode: 'no-cors'
+    })
+    await userContext.cleanUser()
+    history.push('/')
+  }
 
   return (
     <Layout>
@@ -38,7 +46,7 @@ export default function MainView() {
               title={
                 <span className="submenu-title-wrapper">
                   <Icon type="user" />
-                  Account
+                  {user != null && user.name != null ? user.name : "Account"}
                 </span>
               }
               className="account-submenu"
@@ -47,7 +55,7 @@ export default function MainView() {
               <Menu.Item key="account:profile">
                 <Link to="/profile">Profile</Link>
               </Menu.Item>
-              <Menu.Item key="account:logaut">
+              <Menu.Item key="account:logout" onClick={logout}>
                 Logout
               </Menu.Item>
             </SubMenu>
@@ -63,15 +71,7 @@ export default function MainView() {
           )}
         </Menu>
       </Header>
-      <Layout>
-        <Switch>
-          <Route path="/auth/login" component={LoginView} />
-          <Route path="/devices" component={DevicesView} />
-          <Route path="/users" component={UsersView} />
-          <Route path="/profile" component={ProfileView} />
-          <Route path="/" component={HomeView} />
-        </Switch>
-      </Layout>
+      <Routes />
     </Layout>
   );
 }

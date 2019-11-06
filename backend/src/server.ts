@@ -1,6 +1,5 @@
 import express from 'express'
-import { Issuer, generators } from 'openid-client'
-import OpenIDConnectStrategy from 'openid-client/lib/passport_strategy'
+import { Issuer, generators, Strategy } from 'openid-client'
 import session from 'express-session'
 import logger from 'morgan'
 import passport from 'passport'
@@ -11,7 +10,8 @@ import { httpTestSession, ensureLoggedIn } from './helpers/httpHelpers'
 // load the basic infos from env
 const port = process.env.PORT || 4000
 const host = process.env.HOST || 'http://localhost:4000'
-const redirect_uri = host + '/auth/callback'
+const callbackPath = '/auth/gewv/callback'
+const redirect_uri = host + callbackPath
 const issuer_uri = process.env.OPENID_CLIENT_ISSUER || ''
 const client_id = process.env.OPENID_CLIENT_ID || ''
 const client_secret = process.env.OPENID_CLIENT_SECRET
@@ -20,11 +20,13 @@ const sessionSecret = Math.random().toString(36);
 const sessionConfig = {
     secret: sessionSecret,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
         httpOnly: true
     },
 }
+
+console.log(sessionSecret)
 
 const main = async () => {
 
@@ -36,7 +38,6 @@ const main = async () => {
         response_types: ['code'],
     })
     const code_verifier = generators.codeVerifier();
-    const code_challenge = generators.codeChallenge(code_verifier);
     const app = express()
 
     app.use(session(sessionConfig))
@@ -44,8 +45,8 @@ const main = async () => {
     app.use(passport.session())
     app.use(cors())
 
-    passport.use('oidc', new OpenIDConnectStrategy({ client, sessionKey: sessionSecret }, (tokenSet, profile, done) => {
-        return done(null, profile);
+    passport.use('oidc', new Strategy({ client }, (tokenSet, userinfo, done) => {
+        return done(null, userinfo);
     }))
 
     passport.serializeUser((user, next) => {
@@ -56,25 +57,31 @@ const main = async () => {
         next(null, obj);
     });
 
-    app.use('/auth/gewv', passport.authenticate('oidc'));
+    app.use('/auth/gewv/login', passport.authenticate('oidc'));
 
-    app.use('/auth/callback',
+    app.use(callbackPath,
         passport.authenticate('oidc', { failureRedirect: '/error' }),
         (req, res) => {
             res.redirect('http://localhost:3000/');
         }
     );
 
-    app.use('/profile', (req, res) => {
+    app.use('/api/user', ensureLoggedIn, (req, res) => {
         console.log("User request")
         console.log(req.user)
+        console.log(req.session)
         res.send(req.user)
     });
 
-    app.get('/auth/logout', async function (req, res) {
+    app.get('/auth/gewv/logout', async function (req, res) {
+        console.log("Logout")
         req.logout()
-        req.session.destroy(() => { })
-        res.redirect('http://localhost:3000/')
+        req.session.destroy((err) => {
+            if (err != null) {
+                res.sendStatus(500)
+            }
+            res.sendStatus(200)
+        })
     })
 
 

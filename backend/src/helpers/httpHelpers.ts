@@ -5,7 +5,7 @@ export function ensureLoggedIn(req, res, next) {
         return next();
     }
 
-    res.redirect('http://localhost:3000/auth/login')
+    res.sendStatus(404)
 }
 
 export function httpTestSession(req: Request, res: Response): Boolean {

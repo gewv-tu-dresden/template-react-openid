@@ -2,11 +2,12 @@
   "name": "template-react-openid",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:4000",
   "dependencies": {
     "@axa-fr/react-oidc-context": "^3.0.2-alpha.0",
     "@types/jest": "24.0.20",
     "@types/node": "12.11.7",
-    "@types/react": "16.9.11",
+    "@types/react": "^16.9.11",
     "@types/react-dom": "16.9.3",
     "@types/react-router-dom": "^5.1.0",
     "antd": "^3.24.3",

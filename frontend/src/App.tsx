@@ -1,33 +1,72 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Redirect } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import MainView from "./views/MainView";
 import "./App.scss";
 
-const UserContext = React.createContext(null)
+type ContextProps = {
+  user: {
+    sub: String,
+    email_verified: Boolean,
+    name: String,
+    preferred_username: String,
+    given_name: String,
+    family_name: String,
+    email: String
+  } | null,
+  cleanUser: () => Promise<void>,
+  loadUser: () => Promise<void>,
+}
+
+export const UserContext = React.createContext<ContextProps>({
+  user: null,
+  cleanUser: async () => { },
+  loadUser: async () => { },
+})
 
 function App() {
-  const [profile, setProfile] = useState(null)
-  useEffect(() => {
-    const loadUser = async () => {
-      const res = await fetch('http://localhost:4000/profile', {
-        mode: 'no-cors',
-      })
+  const loadUser = async () => {
+    try {
+      const res = await fetch('/api/user')
 
       console.log(res)
-      setProfile(await res.json())
+      setUserContext({
+        ...userContext,
+        user: await res.json(),
+      })
+      return
+    } catch (err) {
+      setUserContext({
+        ...userContext,
+        user: null,
+      })
     }
+  }
 
-    loadUser()
+  const cleanUser = async () => {
+    setUserContext({
+      ...userContext,
+      user: null,
+    })
+  }
+
+  const [userContext, setUserContext] = useState({
+    user: null,
+    loadUser,
+    cleanUser,
   })
+
+  useEffect(() => {
+    userContext.loadUser()
+  }, [])
 
   return (
     <div className="App">
-      <Router>
-        <UserContext.Provider value={profile}>
+      <UserContext.Provider value={userContext}>
+        <Router>
           <MainView />
-        </UserContext.Provider>
-      </Router>
+        </Router>
+      </UserContext.Provider>
     </div>
   );
 }
