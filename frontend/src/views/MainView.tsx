@@ -63,10 +63,12 @@ export default function MainView() {
 
           {!loggedIn && (
             <Menu.Item key="account:login" className="login-menuitem">
-              <span>
-                <Icon type="login" />
-                <Link to="/auth/login">Login</Link>
+              <Link to="/auth/login">
+                <span>
+                  <Icon type="login" />
+                  Login
               </span>
+              </Link>
             </Menu.Item>
           )}
         </Menu>

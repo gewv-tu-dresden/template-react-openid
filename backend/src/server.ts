@@ -26,8 +26,6 @@ const sessionConfig = {
     },
 }
 
-console.log(sessionSecret)
-
 const main = async () => {
 
     const issuer = await Issuer.discover(issuer_uri)
@@ -67,14 +65,10 @@ const main = async () => {
     );
 
     app.use('/api/user', ensureLoggedIn, (req, res) => {
-        console.log("User request")
-        console.log(req.user)
-        console.log(req.session)
         res.send(req.user)
     });
 
     app.get('/auth/gewv/logout', async function (req, res) {
-        console.log("Logout")
         req.logout()
         req.session.destroy((err) => {
             if (err != null) {
