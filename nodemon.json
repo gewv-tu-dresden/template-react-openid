@@ -6,8 +6,8 @@
         "node_modules"
     ],
     "watch": [
-        "backend/src"
+        "src"
     ],
-    "exec": "npm start",
+    "exec": "npm run server",
     "ext": "ts"
 }
