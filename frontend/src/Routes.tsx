@@ -32,7 +32,7 @@ export default function Routes() {
                 <PrivateRoute path="/devices" component={DevicesView} />
                 <PrivateRoute path="/users" component={UsersView} />
                 <PrivateRoute path="/profile" component={ProfileView} />
-                <Route path="/" component={HomeView} />
+                <Route path="/" component={HomeView} /> 
             </Switch>
         </Layout>
     )

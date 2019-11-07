@@ -1,11 +1,13 @@
 import express from 'express'
-import { Issuer, generators, Strategy } from 'openid-client'
+import { Issuer } from 'openid-client'
 import session from 'express-session'
 import logger from 'morgan'
 import passport from 'passport'
 import cors from 'cors'
 
-import { httpTestSession, ensureLoggedIn } from './helpers/httpHelpers'
+import buildAuthRoutes from './routes/auth'
+import buildUserRoutes from './routes/user'
+import preparePassport from './helpers/passportHelpers'
 
 // load the basic infos from env
 const port = process.env.PORT || 4000
@@ -28,6 +30,7 @@ const sessionConfig = {
 
 const main = async () => {
 
+    // initialize the open id client
     const issuer = await Issuer.discover(issuer_uri)
     const client = new issuer.Client({
         client_id,
@@ -35,49 +38,18 @@ const main = async () => {
         redirect_uris: [redirect_uri],
         response_types: ['code'],
     })
-    const code_verifier = generators.codeVerifier();
     const app = express()
 
+    // prepare express to use passport for auth
     app.use(session(sessionConfig))
     app.use(passport.initialize())
     app.use(passport.session())
-    app.use(cors())
+    app.use(cors()) // TODO: Check if that is necassary
+    preparePassport(client)
 
-    passport.use('oidc', new Strategy({ client }, (tokenSet, userinfo, done) => {
-        return done(null, userinfo);
-    }))
-
-    passport.serializeUser((user, next) => {
-        next(null, user);
-    });
-
-    passport.deserializeUser((obj, next) => {
-        next(null, obj);
-    });
-
-    app.use('/auth/gewv/login', passport.authenticate('oidc'));
-
-    app.use(callbackPath,
-        passport.authenticate('oidc', { failureRedirect: '/error' }),
-        (req, res) => {
-            res.redirect('http://localhost:3000/');
-        }
-    );
-
-    app.use('/api/user', ensureLoggedIn, (req, res) => {
-        res.send(req.user)
-    });
-
-    app.get('/auth/gewv/logout', async function (req, res) {
-        req.logout()
-        req.session.destroy((err) => {
-            if (err != null) {
-                res.sendStatus(500)
-            }
-            res.sendStatus(200)
-        })
-    })
-
+    // build all the shiny new routes
+    buildAuthRoutes(app, callbackPath)
+    buildUserRoutes(app)
 
     //init the server
     app.listen(port, () => {
