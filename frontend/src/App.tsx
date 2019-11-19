@@ -6,60 +6,60 @@ import "./App.scss";
 
 type ContextProps = {
   user: {
-    sub: String,
-    email_verified: Boolean,
-    name: String,
-    preferred_username: String,
-    given_name: String,
-    family_name: String,
-    email: String
-  } | null,
-  cleanUser: () => Promise<void>,
-  loadUser: () => Promise<void>,
-}
+    sub: string;
+    email_verified: boolean;
+    name: string;
+    preferred_username: string;
+    given_name: string;
+    family_name: string;
+    email: string;
+  } | null;
+  cleanUser: () => Promise<void>;
+  loadUser: () => Promise<void>;
+};
 
 export const UserContext = React.createContext<ContextProps>({
   user: null,
-  cleanUser: async () => { },
-  loadUser: async () => { },
-})
+  cleanUser: async () => {},
+  loadUser: async () => {}
+});
 
 function App() {
   const loadUser = async () => {
     try {
-      const res = await fetch('/api/user')
+      const res = await fetch("/api/user");
 
-      console.log(res)
+      console.log(res);
       setUserContext({
         ...userContext,
-        user: await res.json(),
-      })
-      return
+        user: await res.json()
+      });
+      return;
     } catch (err) {
       setUserContext({
         ...userContext,
-        user: null,
-      })
+        user: null
+      });
     }
-  }
+  };
 
   const cleanUser = async () => {
     setUserContext({
       ...userContext,
-      user: null,
-    })
-  }
+      user: null
+    });
+  };
 
   const [userContext, setUserContext] = useState({
     user: null,
     loadUser,
-    cleanUser,
-  })
+    cleanUser
+  });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    userContext.loadUser()
-  }, [])
+    userContext.loadUser();
+  }, []);
 
   return (
     <div className="App">
