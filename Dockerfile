@@ -11,5 +11,5 @@ COPY . .
 RUN yarn install && yarn build
 RUN cd ./frontend && yarn install && yarn build
 
-EXPOSE 8080
+EXPOSE 4000
 CMD [ "node", "build/server.js" ]
