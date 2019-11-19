@@ -7,7 +7,7 @@ export default function LoginView() {
       <div id="login-oauth-providers">
         <Row>
           <a
-            href={`http://localhost:4000/auth/gewv/login?returnTo=${window.location.pathname}`}
+            href={`${process.env.REACT_APP_API_HOST}/auth/gewv/login?returnTo=${window.location.pathname}`}
           >
             <Button className="login-oauth-button">GEWV Login</Button>
           </a>

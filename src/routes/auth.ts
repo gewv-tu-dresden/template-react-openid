@@ -13,7 +13,7 @@ const buildAuthRoutes = (app, callbackPath) => {
   app.use(
     callbackPath,
     passport.authenticate("oidc", {
-      failureRedirect: "http://localhost:3000/auth/login"
+      failureRedirect: `${process.env.FRONTEND_HOST}/auth/login`
     }),
     (req, res) => {
       try {
@@ -22,13 +22,17 @@ const buildAuthRoutes = (app, callbackPath) => {
           Buffer.from(state, "base64").toString()
         );
 
-        if (typeof returnTo === "string" && returnTo.startsWith("/")) {
-          return res.redirect(`http://localhost:3000${returnTo}`);
+        if (
+          typeof returnTo === "string" &&
+          returnTo.startsWith("/") &&
+          !returnTo.startsWith("/auth/login")
+        ) {
+          return res.redirect(`${process.env.FRONTEND_HOST}${returnTo}`);
         }
       } catch {
         // just redirect normally below
       }
-      res.redirect("http://localhost:3000/");
+      res.redirect(process.env.FRONTEND_HOST);
     }
   );
 

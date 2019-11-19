@@ -8,7 +8,6 @@ import DevicesView from "./views/DevicesView";
 import HomeView from "./views/HomeView";
 import LoginView from "./views/LoginView";
 import ProfileView from "./views/ProfileView";
-import ProcessLoginView from "./views/ProcessLoginView";
 
 const PrivateRoute = ({ component: Component, ...rest }: RouteProps) => {
   const user = useContext(UserContext);
