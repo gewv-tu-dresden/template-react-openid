@@ -6,6 +6,7 @@ import { UserContext } from "../App";
 
 const { Header } = Layout;
 const { SubMenu } = Menu;
+const apiHost = process.env.HOST || process.env.REACT_APP_API_HOST;
 
 export default function NavHeader() {
   const userContext = useContext(UserContext);
@@ -14,7 +15,7 @@ export default function NavHeader() {
   const loggedIn = user != null;
 
   const logout = async () => {
-    await fetch(`${process.env.REACT_APP_API_HOST}/auth/gewv/logout`, {
+    await fetch(`${apiHost}/auth/gewv/logout`, {
       mode: "no-cors"
     });
     await userContext.cleanUser();

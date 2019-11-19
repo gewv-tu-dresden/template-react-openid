@@ -1,5 +1,7 @@
 import passport from "passport";
 
+const hostURL = process.env.HOST || process.env.FRONTEND_HOST;
+
 const buildAuthRoutes = (app, callbackPath) => {
   app.get("/auth/gewv/login", (req, res, next) => {
     const { returnTo } = req.query;
@@ -13,7 +15,7 @@ const buildAuthRoutes = (app, callbackPath) => {
   app.use(
     callbackPath,
     passport.authenticate("oidc", {
-      failureRedirect: `${process.env.FRONTEND_HOST}/auth/login`
+      failureRedirect: `${hostURL}/auth/login`
     }),
     (req, res) => {
       try {
@@ -27,12 +29,12 @@ const buildAuthRoutes = (app, callbackPath) => {
           returnTo.startsWith("/") &&
           !returnTo.startsWith("/auth/login")
         ) {
-          return res.redirect(`${process.env.FRONTEND_HOST}${returnTo}`);
+          return res.redirect(`${hostURL}${returnTo}`);
         }
       } catch {
         // just redirect normally below
       }
-      res.redirect(process.env.FRONTEND_HOST);
+      res.redirect(hostURL);
     }
   );
 
