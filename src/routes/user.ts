@@ -1,10 +1,15 @@
-import { ensureLoggedIn } from '../helpers/httpHelpers'
+const filterUser = userWithTokens => {
+  const userWithOut = { ...userWithTokens };
+  delete userWithOut.access_token;
+  delete userWithOut.refresh_token;
 
-const buildUserRoutes = (app) => {
-    app.use('/api/user', ensureLoggedIn, (req, res) => {
-        res.send(req.user)
-    });
+  return userWithOut;
+};
 
-}
+const buildUserRoutes = (app, ensureLoggedIn) => {
+  app.use("/api/user", ensureLoggedIn, (req, res) => {
+    res.send(filterUser(req.user));
+  });
+};
 
-export default buildUserRoutes
+export default buildUserRoutes;

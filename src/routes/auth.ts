@@ -2,7 +2,7 @@ import passport from "passport";
 
 const hostURL = process.env.HOST || process.env.FRONTEND_HOST;
 
-const buildAuthRoutes = (app, callbackPath) => {
+const buildAuthRoutes = (app, callbackPath, ensureLoggedIn) => {
   app.get("/auth/gewv/login", (req, res, next) => {
     const { returnTo } = req.query;
     const state = returnTo

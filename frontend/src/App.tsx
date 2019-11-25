@@ -29,7 +29,6 @@ function App() {
     try {
       const res = await fetch("/api/user");
 
-      console.log(res);
       setUserContext({
         ...userContext,
         user: await res.json()

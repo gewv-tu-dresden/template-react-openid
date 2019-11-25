@@ -51,11 +51,11 @@ const main = async () => {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(cors()); // TODO: Check if that is necassary
-  preparePassport(client);
+  const ensureLoggedIn = preparePassport(client);
 
   // build all the shiny new routes
-  buildAuthRoutes(app, callbackPath);
-  buildUserRoutes(app);
+  buildAuthRoutes(app, callbackPath, ensureLoggedIn);
+  buildUserRoutes(app, ensureLoggedIn);
 
   if (nodeEnv === "production") {
     // Handles any requests that don't match the ones above
