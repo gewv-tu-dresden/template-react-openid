@@ -13,7 +13,7 @@
     "antd": "^3.24.3",
     "babel-plugin-import": "^1.12.2",
     "customize-cra": "^0.8.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^7.0.0",
     "oidc-client": "^1.9.1",
     "react": "^16.11.0",
     "react-app-rewired": "^2.1.4",
